@@ -28,7 +28,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4 python-dotenv
 
+      - name: Guard UK local 07:00
+        run: |
+          HOUR=$(TZ=Europe/London date +%H)
+          DOW=$(TZ=Europe/London date +%u)
+          if [ "$HOUR" = "07" ] && [ "$DOW" = "3" ]; then
+            echo "RUN_BOOKING=true" >> "$GITHUB_ENV"
+          else
+            echo "RUN_BOOKING=false" >> "$GITHUB_ENV"
+          fi
+
       - name: Run booking
+        if: github.event_name == 'workflow_dispatch' || env.RUN_BOOKING == 'true'
         run: |
           python -m lifestyles_browser.booking \
             --activity-id 100 \
