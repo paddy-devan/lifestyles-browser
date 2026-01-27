@@ -3,15 +3,8 @@ name: book_courts_wednesday
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: "0 7 * * 3"  # GMT (winter) H
-    - cron: "0 6 * * 3"  # BST (summer) H-1
-
-
-x-timezone-check: &timezone_check |
-  CRON_HOUR=$(echo "${{ github.event.schedule }}" | awk '{print $2}')
-  LOCAL_HOUR=$(TZ=Europe/London date +%H)
-  SCHEDULE_LOCAL_HOUR=$(TZ=Europe/London date -d "today ${CRON_HOUR}:00 UTC" +%H)
-  [ "$LOCAL_HOUR" = "$SCHEDULE_LOCAL_HOUR" ] && echo "RUN_BOOKING=true" >> "$GITHUB_ENV" || echo "RUN_BOOKING=false" >> "$GITHUB_ENV"
+    - cron: "0 7 * * 3"  # GMT (winter) - H
+    - cron: "0 6 * * 3"  # BST (summer) - H-1
 
 jobs:
   tennis_wednesday_paddy:
@@ -34,7 +27,7 @@ jobs:
           pip install requests beautifulsoup4 python-dotenv
 
       - name: timezone_check
-        run: *timezone_check
+        uses: ./.github/actions/timezone-check
 
       - name: book_court
         if: github.event_name == 'workflow_dispatch' || env.RUN_BOOKING == 'true'
@@ -65,7 +58,7 @@ jobs:
           pip install requests beautifulsoup4 python-dotenv
 
       - name: timezone_check
-        run: *timezone_check
+        uses: ./.github/actions/timezone-check
 
       - name: book_court
         if: github.event_name == 'workflow_dispatch' || env.RUN_BOOKING == 'true'
@@ -96,7 +89,7 @@ jobs:
           pip install requests beautifulsoup4 python-dotenv
 
       - name: timezone_check
-        run: *timezone_check
+        uses: ./.github/actions/timezone-check
 
       - name: book_court
         if: github.event_name == 'workflow_dispatch' || env.RUN_BOOKING == 'true'
