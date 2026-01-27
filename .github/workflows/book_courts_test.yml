@@ -1,0 +1,45 @@
+name: book_courts_test
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 23 * * 2"  # GMT (winter) - H
+    - cron: "0 22 * * 2"  # BST (summer) - H-1
+
+x-timezone-check: &timezone_check |
+  CRON_HOUR=$(echo "${{ github.event.schedule }}" | awk '{print $2}')
+  LOCAL_HOUR=$(TZ=Europe/London date +%H)
+  SCHEDULE_LOCAL_HOUR=$(TZ=Europe/London date -d "today ${CRON_HOUR}:00 UTC" +%H)
+  [ "$LOCAL_HOUR" = "$SCHEDULE_LOCAL_HOUR" ] && echo "RUN_BOOKING=true" >> "$GITHUB_ENV" || echo "RUN_BOOKING=false" >> "$GITHUB_ENV"
+
+jobs:
+  test_booking:
+    runs-on: ubuntu-latest
+    env:
+      lifestyles_email: ${{ secrets.LIFESTYLES_EMAIL }}
+      lifestyles_password: ${{ secrets.LIFESTYLES_PASSWORD }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: set_up_python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: install_dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 python-dotenv
+
+      - name: timezone_check
+        run: *timezone_check
+
+      - name: book_court
+        if: github.event_name == 'workflow_dispatch' || env.RUN_BOOKING == 'true'
+        run: |
+          python -m lifestyles_browser.booking \
+            --activity-id 184 \
+            --days-ahead 2 \
+            --window-start 10:00 \
+            --window-end 11:00
