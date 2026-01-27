@@ -7,36 +7,36 @@ on:
     - cron: "0 6 * * WED"  # BST (summer) - H-1
 
 jobs:
-  tennis_wednesday_paddy:
-    runs-on: ubuntu-latest
-    env:
-      lifestyles_email: ${{ secrets.LIFESTYLES_EMAIL }}
-      lifestyles_password: ${{ secrets.LIFESTYLES_PASSWORD }}
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
+  # tennis_wednesday_paddy:
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     lifestyles_email: ${{ secrets.LIFESTYLES_EMAIL }}
+  #     lifestyles_password: ${{ secrets.LIFESTYLES_PASSWORD }}
+  #   steps:
+  #     - name: checkout
+  #       uses: actions/checkout@v4
 
-      - name: set_up_python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+  #     - name: set_up_python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.11"
 
-      - name: install_dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 python-dotenv
+  #     - name: install_dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install requests beautifulsoup4 python-dotenv
 
-      - name: timezone_check
-        uses: ./.github/actions/timezone-check
+  #     - name: timezone_check
+  #       uses: ./.github/actions/timezone-check
 
-      - name: book_court
-        if: github.event_name == 'workflow_dispatch' || env.RUN_BOOKING == 'true'
-        run: |
-          python -m lifestyles_browser.booking \
-            --activity-id 100 \
-            --days-ahead 7 \
-            --window-start 18:00 \
-            --window-end 20:00
+  #     - name: book_court
+  #       if: github.event_name == 'workflow_dispatch' || env.RUN_BOOKING == 'true'
+  #       run: |
+  #         python -m lifestyles_browser.booking \
+  #           --activity-id 100 \
+  #           --days-ahead 7 \
+  #           --window-start 18:00 \
+  #           --window-end 20:00
 
   badminton_wednesday_paddy:
     runs-on: ubuntu-latest
