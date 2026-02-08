@@ -28,5 +28,5 @@ jobs:
           python -m lifestyles_browser.cli --badminton-club-booking \
             --days-ahead 7 \
             --window-start 19:00 \
-            --window-end 21:00 \ 
-            --dry-run True
+            --window-end 21:00 \
+            --dry-run
