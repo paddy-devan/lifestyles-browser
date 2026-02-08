@@ -2,9 +2,6 @@ name: book_courts_test
 
 on:
   workflow_dispatch: {}
-  # schedule:
-  #   - cron: "20 23 * * TUE"  # GMT (winter) - H
-  #   - cron: "20 22 * * TUE"  # BST (summer) - H-1
 
 jobs:
   test_booking:
@@ -26,14 +23,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4 python-dotenv
 
-      - name: timezone_check
-        uses: ./.github/actions/timezone-check
-
       - name: book_court
-        if: github.event_name == 'workflow_dispatch' || env.RUN_BOOKING == 'true'
         run: |
-          python -m lifestyles_browser.booking \
-            --activity-id 184 \
-            --days-ahead 2 \
-            --window-start 10:00 \
-            --window-end 11:00
+          python -m lifestyles_browser.cli --badminton-club-booking \
+            --days-ahead 7 \
+            --window-start 19:00 \
+            --window-end 21:00 \ 
+            --dry-run True

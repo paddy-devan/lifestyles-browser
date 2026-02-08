@@ -89,6 +89,7 @@ def fetch_slots(
     start_date: dt.date,
     days: int = 1,
     activity_id: Optional[int] = None,
+    location_id: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     start_dt = start_date.strftime("%Y-%m-%dT%H:%M:%S.000Z")
     end_dt = (start_date + dt.timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
@@ -98,6 +99,8 @@ def fetch_slots(
 
     for loc in locations[0]["Children"]:
         loc_id = loc["Id"]
+        if location_id is not None and loc_id != location_id:
+            continue
         booking_facility_id = s.get(
             f"{BASE_URL}/enterprise/FacilityLocation?request={loc_id}"
         ).json()[0]
@@ -265,6 +268,7 @@ def find_and_book(
     window_start: str,
     window_end: str,
     dry_run: bool = True,
+    location_id: Optional[int] = None,
 ) -> Dict[str, Any]:
     s = login_session()
 
@@ -281,7 +285,13 @@ def find_and_book(
         window_end_dt = dt.datetime.combine(date, end_time)
         days = 1
 
-    slots = fetch_slots(s, date, days=days, activity_id=activity_id)
+    slots = fetch_slots(
+        s,
+        date,
+        days=days,
+        activity_id=activity_id,
+        location_id=location_id,
+    )
     candidates = []
     for slot in slots:
         if slot.get("ActivityId") != activity_id:
@@ -322,35 +332,6 @@ def find_and_book(
 
 
 if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Find and book the earliest slot in a time window.")
-    parser.add_argument("--list-activities", action="store_true")
-    parser.add_argument("--activity-id", type=int)
-    parser.add_argument("--days-ahead", type=int, help="Days ahead from today")
-    parser.add_argument("--window-start", type=str, help="HH:MM (24h)")
-    parser.add_argument("--window-end", type=str, help="HH:MM (24h)")
-    parser.add_argument("--dry-run", action="store_true", default=False)
-
-    args = parser.parse_args()
-
-    s = login_session()
-    if args.list_activities:
-        acts = list_activities(s)
-        print(json.dumps(acts, indent=2))
-    else:
-        if not (
-            args.activity_id
-            and args.days_ahead is not None
-            and args.window_start
-            and args.window_end
-        ):
-            raise SystemExit("Missing required arguments for booking flow.")
-        result = find_and_book(
-            activity_id=args.activity_id,
-            days_ahead=args.days_ahead,
-            window_start=args.window_start,
-            window_end=args.window_end,
-            dry_run=args.dry_run,
-        )
-        print(json.dumps(result, indent=2))
+    raise SystemExit(
+        "This module provides booking logic. Use `python -m lifestyles_browser.cli`."
+    )
