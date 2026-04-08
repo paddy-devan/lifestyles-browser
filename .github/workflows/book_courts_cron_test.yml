@@ -31,4 +31,4 @@ jobs:
             --days-ahead 2 \
             --window-start 09:00 \
             --window-end 12:00 \
-            --dry-run True
+            --dry-run
