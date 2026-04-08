@@ -3,7 +3,7 @@ name: book_courts_wednesday
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: "50 5 * * WED"
+    - cron: "45 5 * * WED"
 
 jobs:
   badminton_wednesday:
