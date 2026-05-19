@@ -30,8 +30,8 @@ jobs:
           python -m lifestyles_browser.cli --badminton-club-booking \
             --profile paddy \
             --profile hannah \
-            --location 144 \
             --location 3 \
+            --location 144 \
             --days-ahead 7 \
             --window-start 19:00 \
             --window-end 21:00
